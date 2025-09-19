@@ -13,15 +13,24 @@ int save(char *argv[], char *hosts)
     
     Host *host = hst_load(name, hosts);
     if (host) {
-        fprintf(stderr, "Unable to save, entry: \"%s\" already exists.\n", name);
+        fprintf(stderr, "Aborting, entry: \"%s\" already exists.\n", name);
         hst_free(host);
         return 1;
     }
     
     host = hst_create(name, address, username, port);
-    if (!host) return 1;
-    if (hst_save(host, hosts) == 0)
+    if (!host) {
+        fprintf(stderr, "Unable to create host, error: \"not enough memory\".\n");
+        return 1;
+    }
+    
+    if (hst_save(host, hosts) == 0) {
         printf("Host '%s' successfully saved in %s\n", name, hosts);
+    } else {
+        fprintf(stderr, "Unable to save host, error: \"failed to write to file\".\n");
+        hst_free(host);
+        return 1;
+    }
     
     hst_free(host);
     return 0;
@@ -32,7 +41,7 @@ int connect(char *argv[], char *hosts)
     const char *name = argv[2];
     Host *host = hst_load(name, hosts);
     if (!host) {
-        fprintf(stderr, "Unable to connect, entry \"%s\" not found.\n", name);
+        fprintf(stderr, "Unable to connect, error: \"entry %s not found\".\n", name);
         return 1;
     }
 
@@ -50,7 +59,7 @@ int connect(char *argv[], char *hosts)
     printf("Connecting to %s@%s:%d...\n", host->username, host->address, host->port);
     execvp("ssh", ssh_args);
 
-    perror("Unable to invoke ssh via execvp.");
+    fprintf(stderr, "Unable to connect, error: \"entry \"%s\" not found\".\n", name);
     hst_free(host);
     return 1;
 }

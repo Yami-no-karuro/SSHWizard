@@ -6,10 +6,7 @@
 Host *hst_create(const char *name, const char *address, const char *username, int port)
 {
     Host *host = malloc(sizeof(Host));
-    if (!host) {
-        perror("Unable to allocate enough memory for a Host instance.");
-        return NULL;
-    }
+    if (!host) return NULL;
     
     strcpy(host->name, name);
     strcpy(host->address, address);
@@ -21,10 +18,7 @@ Host *hst_create(const char *name, const char *address, const char *username, in
 Host *hst_load(const char *search, const char *filename)
 {
     FILE *file = fopen(filename, "r");
-    if (!file) {
-        perror("Unable to open hosts file in read mode.");
-        return NULL;
-    }
+    if (!file) return NULL;
     
     char line[256];
     while (fgets(line, sizeof(line), file)) {
@@ -50,10 +44,7 @@ Host *hst_load(const char *search, const char *filename)
 int hst_save(const Host *host, const char *filename) 
 {
     FILE *file = fopen(filename, "a");
-    if (!file) {
-        perror("Unable to open hosts file in append mode.");
-        return -1;
-    }
+    if (!file) return -1;
     
     fprintf(file, "%s,%s,%s,%d\n", host->name, host->address, host->username, host->port);
     fclose(file);
