@@ -1,0 +1,97 @@
+#!/bin/bash
+
+# ====
+# Usage: "bin/console build <debug|release> <source>"
+# Description: Compiles the provided source along with all files in lib
+# ====
+
+build()
+{
+    local TARGET="$1"
+    local SOURCE="$2"
+
+    if [[ "$TARGET" = "debug" || "$TARGET" = "release" ]]; then
+        mkdir -p "./target/$TARGET"
+
+        if [[ "$TARGET" = "release" ]]; then
+            UNIQID=$(date +%s)
+            OUTPUT="./target/$TARGET/$UNIQID-$SOURCE"
+        else
+            OUTPUT="./target/$TARGET/$SOURCE"
+        fi
+
+        SRC_FILES=$(find src -type f -name '*.c')
+        gcc -o "$OUTPUT" $SRC_FILES -Isrc/lib
+
+        if [ $? -ne 0 ]; then
+            exit 1
+        fi
+
+        echo "Build $SOURCE ($TARGET) finished executing."
+    else
+        echo "Error."
+        echo "Invalid or missing build target."
+        exit 1
+    fi
+}
+
+# ====
+# Usage: "bin/console run <source>"
+# Description: Compiles and runs the provided source
+# ====
+
+run()
+{
+    local SOURCE="$2"
+
+    build debug "$SOURCE"
+    if [ ! -f "./target/debug/$SOURCE" ]; then
+        echo "Error."
+        echo "Binary not found."
+        exit 1
+    fi
+
+    shift
+    shift
+
+    "./target/debug/$SOURCE" "$@"
+    if [ $? -ne 0 ]; then
+        exit 1
+    fi
+}
+
+# ====
+# Usage: "bin/console check-requirements"
+# Description: Executes the system requirements check
+# ====
+
+requirements_check()
+{
+    if ! command -v gcc &> /dev/null; then
+        echo -e " - GCC \xE2\x9C\x97"
+    else
+        echo -e " - GCC \xE2\x9C\x93"
+    fi
+
+    echo "Requirements check finished executing."
+}
+
+# ====
+# Main
+# ====
+
+if [ "$1" = "build" ]; then
+    build "$2" "$3"
+    exit 0
+elif [ "$1" = "run" ]; then
+    run "$@"
+    exit 0
+elif [ "$1" = "check-requirements" ]; then
+    requirements_check
+    exit 0
+fi
+
+echo "Error."
+echo "Command not found."
+exit 1
+

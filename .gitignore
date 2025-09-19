@@ -1,0 +1,8 @@
+/target/debug/*
+!/target/debug/.gitkeep
+
+/target/release/*
+!/target/release/.gitkeep
+
+/storage/*
+!/storage/.gitkeep
