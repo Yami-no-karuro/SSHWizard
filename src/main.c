@@ -4,16 +4,14 @@
 #include <unistd.h>
 #include "lib/host.h"
 
-#define HOSTS_FILE_PATH "storage/hosts.txt"
-
-int save(char *argv[])
+int save(char *argv[], char *hosts)
 {
     const char *name = argv[2];
     const char *address = argv[3];
     const char *username = argv[4];
     int port = atoi(argv[5]);
     
-    Host *host = hst_load(name, HOSTS_FILE_PATH);
+    Host *host = hst_load(name, hosts);
     if (host) {
         fprintf(stderr, "Unable to save, entry: \"%s\" already exists.\n", name);
         hst_free(host);
@@ -22,17 +20,17 @@ int save(char *argv[])
     
     host = hst_create(name, address, username, port);
     if (!host) return 1;
-    if (hst_save(host, HOSTS_FILE_PATH) == 0)
-        printf("Host '%s' successfully saved in %s\n", name, HOSTS_FILE_PATH);
+    if (hst_save(host, hosts) == 0)
+        printf("Host '%s' successfully saved in %s\n", name, hosts);
     
     hst_free(host);
     return 0;
 }
 
-int connect(char *argv[])
+int connect(char *argv[], char *hosts)
 {
     const char *name = argv[2];
-    Host *host = hst_load(name, HOSTS_FILE_PATH);
+    Host *host = hst_load(name, hosts);
     if (!host) {
         fprintf(stderr, "Unable to connect, entry \"%s\" not found.\n", name);
         return 1;
@@ -59,6 +57,10 @@ int connect(char *argv[])
 
 int main(int argc, char *argv[]) 
 {
+    const char *home = getenv("HOME");
+    char hosts[512];
+    snprintf(hosts, sizeof(hosts), "%s/.ssh-wizard", home);
+    
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <command> [args...]\n", argv[0]);
         fprintf(stderr, "Commands:\n");
@@ -74,14 +76,14 @@ int main(int argc, char *argv[])
             return 1;
         }
         
-        return save(argv);
+        return save(argv, hosts);
     } else if (strcmp(command, "connect") == 0) {
         if (argc < 3) {
             fprintf(stderr, "Usage: %s connect <name>\n", argv[0]);
             return 1;
         }
         
-        return connect(argv);
+        return connect(argv, hosts);
     }
     
     return 0;

@@ -12,14 +12,8 @@ build()
 
     if [[ "$TARGET" = "debug" || "$TARGET" = "release" ]]; then
         mkdir -p "./target/$TARGET"
-
-        if [[ "$TARGET" = "release" ]]; then
-            UNIQID=$(date +%s)
-            OUTPUT="./target/$TARGET/$UNIQID-$SOURCE"
-        else
-            OUTPUT="./target/$TARGET/$SOURCE"
-        fi
-
+        
+        OUTPUT="./target/$TARGET/$SOURCE"
         SRC_FILES=$(find src -type f -name '*.c')
         gcc -o "$OUTPUT" $SRC_FILES -Isrc/lib
 
@@ -94,4 +88,3 @@ fi
 echo "Error."
 echo "Command not found."
 exit 1
-
