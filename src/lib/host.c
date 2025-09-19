@@ -51,6 +51,27 @@ int hst_save(const Host *host, const char *filename)
     return 0;
 }
 
+void hst_list(const char *filename)
+{
+    FILE *file = fopen(filename, "r");
+    if (!file) return;
+
+    char line[256];
+    while (fgets(line, sizeof(line), file)) {
+        line[strcspn(line, "\n")] = '\0';
+
+        char name[HOST_NAME_STRLEN];
+        char address[HOST_IP_STRLEN];
+        char username[HOST_USER_STRLEN];
+        int port;
+
+        if (sscanf(line, "%63[^,],%15[^,],%63[^,],%d", name, address, username, &port) == 4)
+            printf("- %s (%s@%s:%d)\n", name, username, address, port);
+    }
+
+    fclose(file);
+}
+
 void hst_free(Host *host)
 {
     free(host);

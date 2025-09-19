@@ -16,6 +16,7 @@ Host *hst_create(const char *name, const char *address, const char *username, in
 Host *hst_load(const char *search, const char *filename);
 
 int hst_save(const Host *host, const char *filename);
+void hst_list(const char *filename);
 void hst_free(Host *host);
 
 #endif

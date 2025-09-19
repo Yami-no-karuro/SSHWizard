@@ -9,6 +9,7 @@ It allows to store and retrieve connection informations via command line interfa
 
 ### Commands
 
+- `ssh-wizard list`: List saved SSH hosts.
 - `ssh-wizard save <name> <address> <username> <port>`: Save a new SSH host.
 - `ssh-wizard connect <name>`: Connect to a saved SSH host via name.
 

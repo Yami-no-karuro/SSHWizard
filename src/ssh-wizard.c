@@ -64,6 +64,12 @@ int connect(char *argv[], char *hosts)
     return 1;
 }
 
+int list(char *hosts)
+{
+    hst_list(hosts);
+    return 0;
+}
+
 int main(int argc, char *argv[]) 
 {
     const char *home = getenv("HOME");
@@ -73,6 +79,7 @@ int main(int argc, char *argv[])
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <command> [args...]\n", argv[0]);
         fprintf(stderr, "Commands:\n");
+        fprintf(stderr, " - list\n");
         fprintf(stderr, " - save <name> <address> <username> <port>\n");
         fprintf(stderr, " - connect <name>\n");
         return 1;
@@ -93,6 +100,8 @@ int main(int argc, char *argv[])
         }
         
         return connect(argv, hosts);
+    } else if (strcmp(command, "list") == 0) {
+        return list(hosts);
     }
     
     return 0;
